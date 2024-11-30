@@ -1,87 +1,120 @@
-# Estruturas de Programação
+#install.packages("tidyverse")
+library(tidyverse)
 
-## IF - Else
+dados <- readr::read_csv("/home/espinf/msschualtz/DSBD/R/data/Mental Health Dataset.csv")
 
-nota <- 7
+## Para vermos o resumo dos dados, podemos utilizar a função glimpse()
+glimpse(dados)
 
-if(nota >= 7) {
-  print('Aprovado')
-} else {
-  print('Reprovado')
-}
+## Criando variáveis com mutate
 
+dados <- dados %>% 
+  mutate(mercosul = ifelse(Country %in%
+                             c("Argentina", "Brazil", "Paraguay", "Uruguay"),
+                           "Mercosul", "Não Mercosul"))
+glimpse(dados)
 
-horario <-'manhã'
-valor <-  4
+## Selecionando variáveis com select 
 
-if(horario == 'manhã') {
-  cat('Bom dia!')
-} else if(horario == 'tarde'){
-  cat('Boa Tarde!')
-} else {
-  cat('Boa Noite!')
-} 
+### 1º Método: Declarar a seleção
 
-if(valor <= 100){
-  cat('Você ganhou um voucher de 5% na sua próxima compra')
-} else {
-  cat('Você ganhou um voucher de 10% na sua próxima compra')
-  
-}  
+dados2 <- dados %>% 
+  select(Country, Timestamp, Days_Indoors, mercosul)
+glimpse(dados2)
 
-## Exercício 
+### 2º Método: Seleção por índices
 
+dados3 <- dados %>% 
+  select(3:5)
+glimpse(dados3)
 
-#1 - Para quaisquer ponto (x,y) em um plano cartesiano, indique a qual quadrante esse ponto pertence.
+### 3º Método: Seleção Intervalar
 
-ponto <- c(-1,2)
+dados4 <- dados %>% 
+  select(treatment:Changes_Habits)
+glimpse(dados4)
 
-dplyr::case_when(ponto,
-                 (ponto[1] > 0) & (ponto[2] > 0) ~ '1º Quadrante',
-                 (ponto[1] > 0) & (ponto[2] < 0) ~ '4º Quadrante',
-                 (ponto[1] < 0) & (ponto[2] > 0) ~ '2º Quadrante',
-                 (ponto[1] < 0) & (ponto[2] < 0) ~ '3º Quadrante'
-)
+### OBS: Podemos utilizar a função starts_with(), ends_with(), contains() e matches() para selecionar variáveis que atendam a um padrão. 
+### E caso a ideia seja selecionar por tipo, é possível usar select(where= is.type) ou select_if(is.type)
 
-# 2 - Crie um código que, dado um número, indique se ele é par ou ímpar.
+### Para remover variáveis, podemos utilizar a função select() com o operador -.
 
-numero <- 4
-
-if((numero %% 2) == 0) {
-  print('Par')
-} else {
-  print('Ímpar')
-}
+dados5 <- dados %>% 
+  select(-Country, -Timestamp, -Days_Indoors, -mercosul)
+glimpse(dados5)
 
 
+## Filtrando Observações com filter()
 
-## For
+dados %>% filter(Country == 'Brazil')
 
-### 3 - Utilizando o for loop, calcule os n primeiros números da sequência de Fibonacci. 
-        #A sequência de Fibonacci começa com 1, e os números subsequentes são a soma dos dois anteriores (1,1,2,3,5,8,...).
+dados %>% filter(Country %in% c('Brazil',
+                                'Argentina',
+                                'Uruguay'))
 
-# Número de elementos
-n = 10
-# Vetor para armazenar os números
-Fibonacci <- numeric(n)
-# Inicialização dos dois primeiros números
-Fibonacci[1] <- 1
-Fibonacci[2] <- 1
-# Cálculo dos números
-for (i in 3:n) {
-  Fibonacci[i] <- Fibonacci[i - 1] + Fibonacci[i - 2]
-}
-Fibonacci
+## Ordenando Observações com arrange()
+
+dados %>% arrange(desc(Country)) %>% View()
+
+#Agrupando Dados com group_by()
 
 
-# Inicialização dos dois primeiros números
+require(magrittr)
+dados %<>%
+  mutate(numeric = runif(nrow(dados)))
 
-Fibonacci <- c(1, 1)
-i <- 3
-while (Fibonacci[i - 1] + Fibonacci[i - 2] <= 10000) {
-  Fibonacci[i] <- Fibonacci[i - 1] + Fibonacci[i - 2]
-  i <- i + 1
-}
+dados %>% group_by(Country) %>%
+  summarise(media = mean(numeric),
+            n = n())
 
-Fibonacci
 
+
+# Trabalhando com Datas
+
+car_crash = read_csv("data/Brazil Total highway crashes 2010 - 2023.csv")
+
+car_crash %>% 
+  mutate(data = dmy(data)) %>%
+  mutate(ano = year(data),
+         mes = month(data),
+         dia = day(data)) %>%
+  select(data, ano, mes, dia) %>%
+  head()
+
+## Podemos calcular a diferença entre duas datas utilizando a função difftime().
+
+car_crash %>% 
+  mutate(data = dmy(data)) %>%
+  mutate(dias_desde_acidente = difftime(Sys.Date(), data, units = "days")) %>%
+  select(data, dias_desde_acidente) %>%
+  head()
+
+
+## Podemos somar ou subtrair dias de uma data utilizando a função lubridate::days().
+
+car_crash %>% 
+  mutate(data = dmy(data)) %>%
+  mutate(data_mais_10_dias = data + lubridate::days(10)) %>%
+  select(data, data_mais_10_dias) %>%
+  head()
+
+
+## Podemos extrair a hora, os minutos e os segundos de uma data utilizando as funções hour(), minute() e second().
+
+data <- ymd_hms("2023-08-21 15:30:45")
+ano <- year(data); ano
+mes <- month(data); mes
+dia <- day(data); dia
+hora <- hour(data); hora 
+minuto <- minute(data); minuto 
+segundo <- second(data); segundo
+
+## Podemos converter o fuso horário de uma data utilizando a função with_tz().
+
+### Data original no fuso horário de Nova Iorque
+data_ny <- ymd_hms("2023-08-21 12:00:00", tz = "America/New_York")
+
+### Converter para o fuso horário de Londres
+data_london <- with_tz(data_ny, tz = "Europe/London")
+
+print(data_ny)
