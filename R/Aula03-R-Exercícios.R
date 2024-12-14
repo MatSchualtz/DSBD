@@ -87,3 +87,31 @@ car_crash %>%
   arrange(desc(total_mortos_dia))
 
 
+
+#4.Utilize os dados do pacote nycflights13 para responder as perguntas abaixo:
+#Para vôos com atraso superior a 12 horas em flights, verifique as condições climáticas em weather. 
+#Quais os meses do ano em que você encontra o maior número de atrasos?
+require(nycflights13)
+flights %>% 
+  filter(arr_delay > 12*60 | dep_delay > 12*60) %>% 
+  inner_join(weather, by = c("year", "month", "day", "hour", "origin")) %>% 
+  group_by(month) %>% 
+  summarise(total_atrasos = n(),
+            mean_temp = mean(temp, na.rm = T),
+            mean_dewp = mean(dewp, na.rm = T),
+            mean_humid = mean(humid, na.rm = T),
+            mean_wind_speed = mean(wind_speed, na.rm = T),
+            mean_precip = mean(precip, na.rm = T)
+  ) %>% 
+  arrange(desc(total_atrasos))
+
+#Encontre os 20 destinos mais comuns e identifique seu aeroporto.
+flights %>% 
+  group_by(dest) %>% 
+  summarise(total_voos = n()) %>% 
+  arrange(desc(total_voos)) %>% 
+  head(20) %>% 
+  inner_join(airports, by = c("dest" = "faa"))
+
+
+

@@ -118,3 +118,29 @@ data_ny <- ymd_hms("2023-08-21 12:00:00", tz = "America/New_York")
 data_london <- with_tz(data_ny, tz = "Europe/London")
 
 print(data_ny)
+
+# Transformando do Formato Long para Wide
+
+table1 %>%
+  select(-population) %>%
+  pivot_wider(names_from = year, 
+              values_from = cases)
+
+## Com duas variáveis 
+
+table1 %>% 
+  pivot_wider(names_from = year, 
+              values_from = c(cases, population))
+
+
+# Transformando do Wide para Long 
+
+table1 %>% 
+  pivot_longer(cols = c(cases, population), 
+               names_to = "variable", 
+               values_to = "total")
+
+# Separando em diferentes colunas 
+
+table3 %>% 
+  separate(rate, into = c("cases", "population"))
