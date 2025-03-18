@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 
 
-def main(fname):
+def main(fname,exibir=False):
 
         # loads data
         print ("Loading data...")
@@ -40,9 +40,29 @@ def main(fname):
         print ('Accuracy: ',  neigh.score(X_test, y_test))
 
         # cria a matriz de confusao
-        cm = confusion_matrix(y_test, y_pred)
-        print (cm)
-        print(classification_report(y_test, y_pred))
+        if exibir == True:
+          cm = confusion_matrix(y_test, y_pred)
+          print (cm)
+          print(classification_report(y_test, y_pred))
+          cr = classification_report(y_test, y_pred,output_dict=True)
+          precision = cr['weighted avg']['precision']
+          recall = cr['weighted avg']['recall']
+          f1_score = cr['weighted avg']['f1-score']
+          support = cr['weighted avg']['support']
+        else:
+          cr = classification_report(y_test, y_pred,output_dict=True)
+          precision = cr['weighted avg']['precision']
+          recall = cr['weighted avg']['recall']
+          f1_score = cr['weighted avg']['f1-score']
+          support = cr['weighted avg']['support']
+          acuracia = neigh.score(X_test, y_test)
+
+        return {
+            'acuracia':acuracia,
+            'precision':precision,
+            'recall':recall,
+            'f1_score':f1_score
+        }
 
 
 if __name__ == "__main__":
