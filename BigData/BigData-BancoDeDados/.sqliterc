@@ -1,0 +1,2 @@
+.headers ON
+PRAGMA foreign_keys = ON;
