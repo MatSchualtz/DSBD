@@ -1,4 +1,53 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Arquivos temporários de rede
+Icon?
+._*
+
+# Thumbnails
+Thumbs.db
+Desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+env/
+venv/
+ENV/
+*.sqlite3
+
+# R
+
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# Logs
+*.log
+
+# Arquivos Jupyter (caso use)
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
+
+# Arquivos de sistema Git
+.gitignore
+
+# Arquivos de configuração locais (por segurança)
+.env
+*.env
+secrets.json
+config.yaml
+
